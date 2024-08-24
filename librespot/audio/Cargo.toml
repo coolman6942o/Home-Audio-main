@@ -1,0 +1,21 @@
+[package]
+name = "librespot-audio"
+version = "0.4.2"
+authors = ["Paul Lietar <paul@lietar.net>"]
+description = "The audio fetching logic for librespot"
+license = "MIT"
+repository = "https://github.com/librespot-org/librespot"
+edition = "2018"
+
+[dependencies.librespot-core]
+path = "../core"
+version = "0.4.2"
+
+[dependencies]
+aes-ctr = "0.6"
+byteorder = "1.4"
+bytes = "1.0"
+log = "0.4"
+futures-util = { version = "0.3", default_features = false }
+tempfile = "3.1"
+tokio = { version = "1", features = ["sync", "macros"] }
