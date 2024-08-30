@@ -1,0 +1,86 @@
+{
+    "server": "media streaming server",
+    "Devices": [
+        {
+            "name": "PI 1",
+            "Audio": [
+                {
+                    "librespot": "Liams_office_[Main]",
+                    "Speakers": [
+                        {
+                            "Bluetooth": [
+                                {
+                                    "name": "Boom3 (1)",
+                                    "Mac":"",
+                                    "Status": [
+                                        "On",
+                                        "Not Connected"
+                                    ],
+                                    "Volume": 100
+                                },
+                                {
+                                    "name": "Boom3 (2)",
+                                    "Mac":"",
+                                    "Status": [
+                                        "On",
+                                        "Connected"
+                                    ],
+                                    "Volume": 100
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "status": "Online"
+        },
+        {
+            "name": "PI 2",
+            "Audio": [
+                {
+                    "librespot": "Liams_bedroom_[Main]",
+                    "Speakers": [
+                        {
+                            "Bluetooth": [
+                                {
+                                    "name": "Boom3 (1)",
+                                    "Mac":"",
+                                    "Status": [
+                                        "On",
+                                        "Not Connected"
+                                    ],
+                                    "Volume": 100
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "status": "Online"
+        },
+        {
+            "name": "PI 3",
+            "Audio": [
+                {
+                    "librespot": "Upstairs_Living_Room_[Main]",
+                    "Speakers": [
+                        {
+                            "Bluetooth": [
+                                {
+                                    "name": "Boom3 (1)",
+                                    "Mac":"",
+                                    "Status": [
+                                        "On",
+                                        "Connected"
+                                    ],
+                                    "Volume": 100
+                                }
+                            ]   
+                        }
+                    ]
+                }
+            ],
+            "status": "Online"
+        }
+    ]
+}

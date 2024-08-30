@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hypothetical V8 Vulnerability Test</title>
+</head>
+<body>
+    <h1>Testing Potential V8 Vulnerabilities (Hypothetical)</h1>
+    <script>
+        // Hypothetical Example: Type Confusion by Changing the Prototype
+        try {
+            // Step 1: Create an object with a property that is not a string
+            let obj = { x: 1000000000 };  // A large number as a property
+
+            // Step 2: Change the prototype of the object to String.prototype
+            obj.__proto__ = String.prototype;
+
+            // Step 3: Attempt to use a string method on the object
+            // Since the object is not really a string, this might confuse the engine
+            let result = obj.substring(0, 2);
+
+            // Output the result to the document
+            document.write("Type Confusion Test Result: " + result);
+        } catch (e) {
+            console.log("Error during Type Confusion:", e);
+        }
+    </script>
+</body>
+</html>

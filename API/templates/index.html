@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Status</title>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- jQuery and jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .device-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            padding: 20px;
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: absolute; /* For draggable positioning */
+        }
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .device-card .material-icons {
+            font-size: 60px;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        .device-card h2 {
+            margin: 0;
+            color: #333;
+        }
+        .device-status, .speaker-status {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: flex-start;
+        }
+        .device-status .material-icons, .speaker-status .material-icons {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .device-status .material-icons {
+            color: green;
+        }
+        .speaker-status .material-icons {
+            color: #616161;
+        }
+        .device-card h2, .device-status span, .speaker-status span {
+            font-weight: normal;
+        }
+
+        /* Grid lines for snapping (optional, for visual aid) */
+        .grid {
+            width: 100%;
+            height: 100vh;
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+                              linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="device-container" class="grid">
+        <!-- Devices will be dynamically inserted here -->
+    </div>
+
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+
+            function renderDevices(data) {
+                const deviceContainer = document.getElementById('device-container');
+                deviceContainer.innerHTML = ''; // Clear existing content
+
+                data.Devices.forEach(device => {
+                    // Create device card
+                    const card = document.createElement('div');
+                    card.className = 'device-card';
+
+                    // Device name and icon
+                    const deviceIcon = document.createElement('span');
+                    deviceIcon.className = 'material-icons';
+                    deviceIcon.textContent = 'devices_other';
+                    card.appendChild(deviceIcon);
+
+                    const deviceName = document.createElement('h2');
+                    deviceName.textContent = device.name;
+                    card.appendChild(deviceName);
+
+                    // Device status
+                    const deviceStatus = document.createElement('div');
+                    deviceStatus.className = 'device-status';
+                    const statusIcon = document.createElement('span');
+                    statusIcon.className = 'material-icons';
+                    statusIcon.textContent = device.status === 'Online' ? 'check_circle' : 'error';
+                    statusIcon.style.color = device.status === 'Online' ? 'green' : 'red';
+                    deviceStatus.appendChild(statusIcon);
+                    const statusText = document.createElement('span');
+                    statusText.textContent = `Status: ${device.status}`;
+                    deviceStatus.appendChild(statusText);
+                    card.appendChild(deviceStatus);
+
+                    // Audio and Speakers
+                    device.Audio.forEach(audio => {
+                        audio.Speakers.forEach(speakerGroup => {
+                            speakerGroup.Bluetooth.forEach(speaker => {
+                                const speakerStatus = document.createElement('div');
+                                speakerStatus.className = 'speaker-status';
+                                const speakerIcon = document.createElement('span');
+                                speakerIcon.className = 'material-icons';
+                                speakerIcon.textContent = 'speaker';
+                                speakerStatus.appendChild(speakerIcon);
+                                const speakerText = document.createElement('span');
+                                speakerText.textContent = `${speaker.name} - ${speaker.Status[1]} (${speaker.Status[0]})`;
+                                speakerStatus.appendChild(speakerText);
+                                card.appendChild(speakerStatus);
+                            });
+                        });
+                    });
+
+                    deviceContainer.appendChild(card);
+
+                    // Make the device card draggable and snap to grid
+                    $(card).draggable({
+                        grid: [50, 50], // Snap to 50px grid
+                        containment: "#device-container" // Contain dragging within the grid
+                    });
+                });
+            }
+
+            // Fetch initial data
+            fetch('/devices')
+                .then(response => response.json())
+                .then(data => renderDevices(data))
+                .catch(error => console.error('Error fetching device data:', error));
+
+            // Listen for real-time updates
+            socket.on('update_device_status', function(data) {
+                renderDevices(data);
+            });
+        });
+    </script>
+</body>
+</html>
