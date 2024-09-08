@@ -1,7 +1,8 @@
 import subprocess
 import requests
-from Actions.functions import *
 import time
+from flask_socketio import SocketIO
+
 # Set the MAC address of the Bluetooth device
 DEVICE_MAC = "10:94:97:22:EA:6B"
 
@@ -9,7 +10,7 @@ DEVICE_MAC = "10:94:97:22:EA:6B"
 EXPECTED_SINK = f"bluez_sink.{DEVICE_MAC.replace(':', '_')}"
 
 # Set the API endpoint and the data to send
-API_ENDPOINT = "http://127.0.0.1:5000/devices/update"
+API_ENDPOINT = "http://192.168.0.179:8000/devices/update"
 
 DATA = {"message": "Bluetooth device is connected and sink is active"}
 
@@ -59,15 +60,18 @@ def main():
         if is_sink_active(EXPECTED_SINK):
             print(f"Sink {EXPECTED_SINK} is active.")
             # Send API request if both conditions are met
-            send_api_request(API_ENDPOINT, "{'name':'PI 2','Status':['Connected','ON']}")
+            data = {"zone":"Pi1","speaker":"MegaBoom 3 (1)","Status":["Connected","ON"]}
+            send_api_request(API_ENDPOINT, data)
         else:
-            send_api_request(API_ENDPOINT, "{'name':'PI 2','Status':['Connected','OFF']}")
+            data = {"zone":"Pi1","speaker":"MegaBoom 3 (1)","Status":["Connected","OFF"]}
+            send_api_request(API_ENDPOINT, data)
             print(f"Sink {EXPECTED_SINK} is not active.")
     else:
         print(f"Bluetooth device {DEVICE_MAC} is not connected.")
-        send_api_request(API_ENDPOINT, "{'name':'PI 2','Status':['Not Connected','OFF']}")
+        data = {"zone":"Pi1","speaker":"MegaBoom 3 (1)","Status":["Not Connected","OFF"]}
+        send_api_request(API_ENDPOINT, data)
 
 if __name__ == "__main__":
     while True:
         main()
-        time.sleep(15)
+        time.sleep(5)

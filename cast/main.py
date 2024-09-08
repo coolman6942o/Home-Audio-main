@@ -64,7 +64,7 @@ def run_librespot_processes_in_background(names=None):
     background_process.start()
     
     # Give the daemon process some time to start and create log files
-    time.sleep(5)  # Increase the delay to give enough time for the processes to start
+    #time.sleep(5)  # Increase the delay to give enough time for the processes to start
 
     # Ensure that log files are created
     log_dir = os.path.expanduser("~/librespot_logs")
@@ -225,7 +225,7 @@ def run_ffmpeg_processes_in_background(sinks=None, ips=None, ports=None):
     background_process.start()
     
     # Give the daemon process some time to start and create log files
-    time.sleep(5)  # Increase the delay to give enough time for the processes to start
+    #time.sleep(5)  # Increase the delay to give enough time for the processes to start
 
     # Ensure that log files are created
     log_dir = os.path.expanduser("~/ffmpeg_logs")

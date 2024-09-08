@@ -2,51 +2,57 @@
     "server": "media streaming server",
     "Devices": [
         {
-            "name": "PI 1",
+            "name": "Upstairs Living Room",
+            "host": "192.168.0.127",
+            "zone": "Pi1",
             "Audio": [
                 {
-                    "librespot": "Liams_office_[Main]",
+                    "librespot": "Upstairs Living Room [Main]",
+                    "pulseaudio": "Upstairs_Living_room_speaker_RTP_sink",
+                    "Speakers": [
+                        {
+                            "Bluetooth": [
+                                {
+                                    "name": "MegaBoom 3 (1)",
+                                    "Mac": "",
+                                    "Status": [
+                                        "On",
+                                        "Connected"
+                                    ],
+                                    "Volume": 100
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "status": "Offline"
+        },
+        {
+            "name": "Liams Office",
+            "host": "192.168.0.106",
+            "zone": "Pi2",
+            "Audio": [
+                {
+                    "librespot": "Liams Office [Main]",
+                    "pulseaudio": "Liams_Office_speaker_RTP_sink",
                     "Speakers": [
                         {
                             "Bluetooth": [
                                 {
                                     "name": "Boom3 (1)",
-                                    "Mac":"",
+                                    "Mac": "",
                                     "Status": [
-                                        "On",
+                                        "Off",
                                         "Not Connected"
                                     ],
                                     "Volume": 100
                                 },
                                 {
                                     "name": "Boom3 (2)",
-                                    "Mac":"",
+                                    "Mac": "",
                                     "Status": [
-                                        "On",
-                                        "Connected"
-                                    ],
-                                    "Volume": 100
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "status": "Online"
-        },
-        {
-            "name": "PI 2",
-            "Audio": [
-                {
-                    "librespot": "Liams_bedroom_[Main]",
-                    "Speakers": [
-                        {
-                            "Bluetooth": [
-                                {
-                                    "name": "Boom3 (1)",
-                                    "Mac":"",
-                                    "Status": [
-                                        "On",
+                                        "Off",
                                         "Not Connected"
                                     ],
                                     "Volume": 100
@@ -59,28 +65,31 @@
             "status": "Online"
         },
         {
-            "name": "PI 3",
+            "name": "Liams Bedroom",
+            "host": "192.168.0.74",
+            "zone": "Pi3",
             "Audio": [
                 {
-                    "librespot": "Upstairs_Living_Room_[Main]",
+                    "librespot": "Liams Bedroom [Main]",
+                    "pulseaudio": "Liams_Bedroom_speaker_RTP_sink",
                     "Speakers": [
                         {
                             "Bluetooth": [
                                 {
-                                    "name": "Boom3 (1)",
-                                    "Mac":"",
+                                    "name": "JBL Horizen H1",
+                                    "Mac": "",
                                     "Status": [
                                         "On",
                                         "Connected"
                                     ],
                                     "Volume": 100
                                 }
-                            ]   
+                            ]
                         }
                     ]
                 }
             ],
-            "status": "Online"
+            "status": "Offline"
         }
     ]
 }
