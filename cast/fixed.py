@@ -14,10 +14,10 @@ def run_librespot_processes_in_background(names=None):
 
     def run_processes_in_background(names):
         # Path to the librespot executable
-        librespot_path = os.path.expanduser("~/Downloads/librespot/target/release/librespot")
+        librespot_path = os.path.expanduser("~/Home-Audio-main/librespot/target/release/librespot")
 
         # Directory to save log files
-        log_dir = os.path.expanduser("/home/liam/Downloads/Home-Audio-main/cast/librespot_logs")
+        log_dir = os.path.expanduser("~/Home-Audio-main/cast/librespot_logs")
         os.makedirs(log_dir, exist_ok=True)
 
         # List to keep track of subprocesses
@@ -67,7 +67,7 @@ def run_librespot_processes_in_background(names=None):
     time.sleep(5)  # Increase the delay to give enough time for the processes to start
 
     # Ensure that log files are created
-    log_dir = os.path.expanduser("~/librespot_logs")
+    log_dir = os.path.expanduser("~/Home-Audio-main/cast/librespot_logs")
     for name in names:
         log_file_path = os.path.join(log_dir, f"{name.replace(' ', '_').replace('[','').replace(']','')}.log")
         if not os.path.exists(log_file_path):
@@ -97,7 +97,7 @@ def create_virtual_audio_sources(sink_names=None, sink_desc=None):
         raise ValueError("The length of sink_names and sink_desc must be the same.")
 
     # Directory to save log files
-    log_dir = os.path.expanduser("/home/liam/Downloads/Home-Audio-main/cast/virtual_audio_source_logs")
+    log_dir = os.path.expanduser("~/Home-Audio-main/cast/virtual_audio_source_logs")
     os.makedirs(log_dir, exist_ok=True)
 
     # Log file path
@@ -170,7 +170,7 @@ def run_ffmpeg_processes_in_background(sinks=None, ips=None, ports=None):
 
     def run_processes_in_background(sinks, ips, ports):
         # Directory to save log files
-        log_dir = os.path.expanduser("/home/liam/Downloads/Home-Audio-main/cast/ffmpeg_logs")
+        log_dir = os.path.expanduser("~/Home-Audio-main/cast/ffmpeg_logs")
         os.makedirs(log_dir, exist_ok=True)
 
         # List to keep track of subprocesses
@@ -228,7 +228,7 @@ def run_ffmpeg_processes_in_background(sinks=None, ips=None, ports=None):
     time.sleep(5)  # Increase the delay to give enough time for the processes to start
 
     # Ensure that log files are created
-    log_dir = os.path.expanduser("~/ffmpeg_logs")
+    log_dir = os.path.expanduser("~/Home-Audio-main/cast/ffmpeg_logs")
     for sink in sinks:
         log_file_path = os.path.join(log_dir, f"{sink.replace(' ', '_').replace('[','').replace(']','')}.log")
         if not os.path.exists(log_file_path):
