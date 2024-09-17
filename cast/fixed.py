@@ -144,24 +144,24 @@ def run_ffmpeg_processes_in_background(sinks=None, ips=None, ports=None):
         # Default list of sink monitors
         sinks = [
             "Upstairs_Living_room_speaker_RTP_sink.monitor",
-            "Liams_Bedroom_speaker_RTP_sink.monitor",
-            "Liams_Office_speaker_RTP_sink.monitor"
+            "Liams_Office_speaker_RTP_sink.monitor",
+            "Liams_Bedroom_speaker_RTP_sink.monitor"
         ]
 
     if ips is None:
         # Default list of IP addresses
         ips = [
-            "192.168.0.74",
+            "192.168.0.127",
             "192.168.0.106",
-            "192.168.0.127"
+            "192.168.0.74"
         ]
 
     if ports is None:
         # Default list of ports
         ports = [
-            "5004",
+            "5000",
             "5001",
-            "5000"
+            "5004"
         ]
 
     # Ensure that the lengths of the lists match
