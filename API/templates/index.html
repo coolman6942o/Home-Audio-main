@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Status</title>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- jQuery and jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- jQuery UI Touch Punch -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .device-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            padding: 20px;
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: absolute; /* For draggable positioning */
+        }
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .device-card .material-icons {
+            font-size: 60px;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        .device-card h2 {
+            margin: 0;
+            color: #333;
+        }
+        .device-status, .speaker-status {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: flex-start;
+        }
+        .device-status .material-icons, .speaker-status .material-icons {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .device-status .material-icons {
+            color: green;
+        }
+        .speaker-status .material-icons {
+            color: #616161;
+        }
+        .device-card h2, .device-status span, .speaker-status span {
+            font-weight: normal;
+        }
+
+        /* Offline state styles */
+        .device-card.offline {
+            opacity: 0.6;
+            pointer-events: none; /* Disable interactivity */
+        }
+
+        .device-card.offline .material-icons {
+            color: #757575; /* Gray out the icon */
+        }
+
+        .device-card.offline h2, 
+        .device-card.offline .device-status span, 
+        .device-card.offline .speaker-status span {
+            color: #9e9e9e; /* Gray out text */
+        }
+
+        /* Grid lines for snapping (optional, for visual aid) */
+        .grid {
+            width: 100%;
+            height: 100vh;
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+                              linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="device-container" class="grid">
+        <!-- Devices will be dynamically inserted here -->
+    </div>
+
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+            let zones = []; // Array to store zones and their associated device names
+            let positions = {}; // Object to store positions by device name
+
+            function renderDevices(data) {
+                const deviceContainer = document.getElementById('device-container');
+                deviceContainer.innerHTML = ''; // Clear existing content
+
+                data.Devices.forEach(device => {
+                    // Create device card
+                    const card = document.createElement('div');
+                    card.className = 'device-card';
+                    card.setAttribute('data-device-name', device.name); // Set device name for identification
+
+                    // Apply saved position if it exists
+                    if (positions[device.name]) {
+                        card.style.left = positions[device.name].left + 'px';
+                        card.style.top = positions[device.name].top + 'px';
+                    }
+
+                    // Apply 'offline' class if the device is offline
+                    if (device.status !== 'Online') {
+                        card.classList.add('offline');
+                    }
+
+                    // Device name and icon
+                    const deviceIcon = document.createElement('span');
+                    deviceIcon.className = 'material-icons';
+                    deviceIcon.textContent = 'devices_other';
+                    card.appendChild(deviceIcon);
+
+                    const deviceName = document.createElement('h2');
+                    deviceName.textContent = device.name;
+                    card.appendChild(deviceName);
+
+                    // Device status
+                    const deviceStatus = document.createElement('div');
+                    deviceStatus.className = 'device-status';
+                    const statusIcon = document.createElement('span');
+                    statusIcon.className = 'material-icons';
+                    statusIcon.textContent = device.status === 'Online' ? 'check_circle' : 'error';
+                    statusIcon.style.color = device.status === 'Online' ? 'green' : 'red';
+                    deviceStatus.appendChild(statusIcon);
+                    const statusText = document.createElement('span');
+                    statusText.textContent = `Status: ${device.status}`;
+                    deviceStatus.appendChild(statusText);
+                    card.appendChild(deviceStatus);
+
+                    // Audio and Speakers
+                    device.Audio.forEach(audio => {
+                        audio.Speakers.forEach(speakerGroup => {
+                            speakerGroup.Bluetooth.forEach(speaker => {
+                                const speakerStatus = document.createElement('div');
+                                speakerStatus.className = 'speaker-status';
+                                const speakerIcon = document.createElement('span');
+                                speakerIcon.className = 'material-icons';
+                                speakerIcon.textContent = 'speaker';
+                                speakerStatus.appendChild(speakerIcon);
+                                const speakerText = document.createElement('span');
+                                speakerText.textContent = `${speaker.name} - ${speaker.Status[1]} (${speaker.Status[0]})`;
+                                speakerStatus.appendChild(speakerText);
+                                card.appendChild(speakerStatus);
+                            });
+                        });
+                    });
+
+                    deviceContainer.appendChild(card);
+
+                    // Only make the card draggable and droppable if the device is online
+                    if (device.status === 'Online') {
+                        $(card).draggable({
+                            grid: [50, 50], // Snap to 50px grid
+                            containment: "#device-container", // Contain dragging within the grid
+                            stop: function(event, ui) {
+                                const draggedCard = $(this);
+                                const draggedName = draggedCard.attr('data-device-name');
+
+                                // Save the new position
+                                positions[draggedName] = {
+                                    left: ui.position.left,
+                                    top: ui.position.top
+                                };
+
+                                let isTouching = false;
+                                const currentZone = findZone(draggedName);
+
+                                if (currentZone) {
+                                    currentZone.forEach(deviceName => {
+                                        if (deviceName !== draggedName) {
+                                            const otherCard = $(`.device-card[data-device-name='${deviceName}']`);
+                                            if (isOverlapping(draggedCard, otherCard)) {
+                                                isTouching = true;
+                                            }
+                                        }
+                                    });
+
+                                    if (!isTouching) {
+                                        removeDeviceFromZone(currentZone, draggedName);
+                                        sendZoneData();
+                                    }
+                                }
+                            }
+                        });
+
+                        $(card).droppable({
+                            accept: ".device-card",
+                            drop: function(event, ui) {
+                                const draggedCard = ui.draggable;
+                                const draggedName = $(draggedCard).attr('data-device-name');
+                                const targetName = $(this).attr('data-device-name');
+                                combineDevices(targetName, draggedName);
+                            }
+                        });
+                    }
+                });
+            }
+
+            function combineDevices(targetName, draggedName) {
+                let targetZone = findZone(targetName);
+                let draggedZone = findZone(draggedName);
+
+                if (targetZone && draggedZone && targetZone !== draggedZone) {
+                    // Merge two zones if both target and dragged devices are in different zones
+                    mergeZones(targetZone, draggedZone);
+                } else if (targetZone) {
+                    // Add dragged device to the target device's zone
+                    if (!targetZone.includes(draggedName)) {
+                        targetZone.push(draggedName);
+                    }
+                } else if (draggedZone) {
+                    // Add target device to the dragged device's zone
+                    if (!draggedZone.includes(targetName)) {
+                        draggedZone.push(targetName);
+                    }
+                } else {
+                    // Create a new zone with both devices
+                    zones.push([targetName, draggedName]);
+                }
+
+                // Send updated zone data to the server
+                sendZoneData();
+            }
+
+            function findZone(deviceName) {
+                return zones.find(zone => zone.includes(deviceName));
+            }
+
+            function mergeZones(zone1, zone2) {
+                // Combine two zones into one
+                zone1.push(...zone2);
+                zone1 = [...new Set(zone1)]; // Remove duplicates
+                zones = zones.filter(zone => zone !== zone2); // Remove the old zone
+            }
+
+            function isOverlapping(card1, card2) {
+                const rect1 = card1[0].getBoundingClientRect();
+                const rect2 = card2[0].getBoundingClientRect();
+
+                return !(
+                    rect1.right < rect2.left || 
+                    rect1.left > rect2.right || 
+                    rect1.bottom < rect2.top || 
+                    rect1.top > rect2.bottom
+                );
+            }
+
+            function removeDeviceFromZone(zone, deviceName) {
+                const index = zone.indexOf(deviceName);
+                if (index > -1) {
+                    zone.splice(index, 1); // Remove the device from the zone
+                }
+
+                // Remove the zone entirely if it becomes empty or only has the device itself
+                if (zone.length < 2) {
+                    zones = zones.filter(z => z !== zone); // Remove the zone
+                }
+            }
+
+            function sendZoneData() {
+                fetch('/zone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ zones: zones })
+                })
+                .then(response => response.json())
+                .then(data => console.log('Success:', data))
+                .catch(error => console.error('Error:', error));
+            }
+
+            // Fetch initial data
+            fetch('/devices')
+                .then(response => response.json())
+                .then(data => renderDevices(data))
+                .catch(error => console.error('Error fetching device data:', error));
+
+            // Listen for real-time updates
+            socket.on('update_device_status', function(data) {
+                console.log(data);
+                renderDevices(data);
+            });
+        });
+    </script>    
+</body>
+</html>
